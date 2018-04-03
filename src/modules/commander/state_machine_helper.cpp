@@ -256,6 +256,7 @@ main_state_transition(const vehicle_status_s &status, const main_state_t new_mai
 	case commander_state_s::MAIN_STATE_MANUAL:
 	case commander_state_s::MAIN_STATE_STAB:
 	case commander_state_s::MAIN_STATE_ACRO:
+        case commander_state_s::MAIN_STATE_MONOCO:
 	case commander_state_s::MAIN_STATE_RATTITUDE:
 		ret = TRANSITION_CHANGED;
 		break;
@@ -352,7 +353,7 @@ main_state_transition(const vehicle_status_s &status, const main_state_t new_mai
 
 	case commander_state_s::MAIN_STATE_MAX:
 	default:
-		break;
+		break;   
 	}
 
 	if (ret == TRANSITION_CHANGED) {
@@ -469,6 +470,7 @@ bool set_nav_state(vehicle_status_s *status, actuator_armed_s *armed, commander_
 	case commander_state_s::MAIN_STATE_RATTITUDE:
 	case commander_state_s::MAIN_STATE_STAB:
 	case commander_state_s::MAIN_STATE_ALTCTL:
+        case commander_state_s::MAIN_STATE_MONOCO:
 
 		/* require RC for all manual modes */
 		if (rc_lost && is_armed) {
@@ -498,6 +500,10 @@ bool set_nav_state(vehicle_status_s *status, actuator_armed_s *armed, commander_
 			case commander_state_s::MAIN_STATE_ALTCTL:
 				status->nav_state = vehicle_status_s::NAVIGATION_STATE_ALTCTL;
 				break;
+
+                        case commander_state_s::MAIN_STATE_MONOCO:
+                                status->nav_state = vehicle_status_s::NAVIGATION_STATE_MONOCO;
+                                break;
 
 			default:
 				status->nav_state = vehicle_status_s::NAVIGATION_STATE_MANUAL;
