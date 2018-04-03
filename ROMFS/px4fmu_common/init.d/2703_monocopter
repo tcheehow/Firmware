@@ -1,0 +1,30 @@
+#!nsh
+#
+# @name THOR Monocopter x
+#
+# @type Hybrid
+# @class Copter
+#
+# @output MOTOR 1
+# @output MOTOR 2
+# @output COLLECTIVE SERVO 1
+# @output CYCLIC SERVO 1
+# @output CYCLIC SERVO 2
+
+# @maintainer Low Jun En <junen_low@sutd.edu.sg>
+#
+# TODO: Separate the motor and servo rates to 400 and 50 respectively.
+
+
+###############
+
+sh /etc/init.d/rc.fw_defaults
+
+if [ $AUTOCNF == yes ]
+then
+
+fi
+
+#set MIXER fw_generic_wing
+set MIXER THOR
+monoco_control start

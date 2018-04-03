@@ -1,0 +1,46 @@
+THOR MIXER
+==================================================
+
+This file defines mixers suitable for controlling the THOR, a hybrid UAV with
+motor (2), collective (1) and cyclic (2) controls. The configuration
+assumes the motors are connected to output 0 and 1, the collective to
+output 2 and the cyclic to output 3 and 4.
+
+Inputs to the mixer come from channel group 0 (vehicle attitude), channels 0
+(roll), 1 (pitch), 2 (thrust), 3 (yaw) [unused], 4 (flight mode), 5 (rad/s lock)
+
+CH1: Motor 1 (port) mixer
+-------------
+M: 1
+O:       10000  10000       0  -10000  10000
+S: 0 0       0  20000  -10000  -10000  10000
+
+CH2: Motor 2 (starboard) mixer
+------------
+M: 1
+O:       10000  10000       0  -10000  10000
+S: 0 1       0  20000  -10000  -10000  10000
+
+CH3: emptry mixer
+------------
+Z:
+
+CH4: Collective mixer
+-----------------
+M: 1
+O:      10000  10000      0 -10000  10000
+S: 0 3  -8000  -8000      0 -10000  10000
+
+CH5: Cyclic 1 (port) mixer
+------------
+M: 1
+O:      10000  10000      0 -10000  10000
+S: 0 4  -8000  -8000      0 -10000  10000
+
+CH6: Cyclic 2 (starboard) mixer
+------------
+M: 1
+O:      10000  10000      0 -10000  10000
+S: 0 5  -8000  -8000      0 -10000  10000
+
+
