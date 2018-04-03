@@ -34,6 +34,7 @@ uint8 NAVIGATION_STATE_AUTO_LAND = 18		# Land
 uint8 NAVIGATION_STATE_AUTO_FOLLOW_TARGET = 19	# Auto Follow
 uint8 NAVIGATION_STATE_AUTO_PRECLAND = 20	# Precision land with landing target
 uint8 NAVIGATION_STATE_MAX = 21
+uint8 NAVIGATION_STATE_MONOCO = 22              # Monocopter Mode
 
 uint8 RC_IN_MODE_DEFAULT = 0
 uint8 RC_IN_MODE_OFF = 1
