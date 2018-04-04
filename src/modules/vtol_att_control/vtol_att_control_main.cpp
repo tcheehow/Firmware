@@ -730,6 +730,8 @@ void VtolAttitudeControl::task_main()
 
 		_vtol_type->fill_actuator_outputs();
 
+                PX4_INFO("Monoco Enabled: %s", _v_control_mode.flag_control_monoco_enabled ? "true" : "false");
+
 		/* Only publish if the proper mode(s) are enabled */
 		if (_v_control_mode.flag_control_attitude_enabled ||
 		    _v_control_mode.flag_control_rates_enabled ||
@@ -756,8 +758,8 @@ void VtolAttitudeControl::task_main()
 
 			} else {
 				_actuators_1_pub = orb_advertise(ORB_ID(actuator_controls_1), &_actuators_out_1);
-			}
-		}
+                        }
+                }
 
 		/*Advertise/Publish vtol vehicle status*/
 		_vtol_vehicle_status.timestamp = hrt_absolute_time();

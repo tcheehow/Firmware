@@ -823,8 +823,7 @@ MulticopterAttitudeControl::run()
 					_lp_filters_d[1].set_cutoff_frequency(_loop_update_rate_hz, _d_term_cutoff_freq.get());
 					_lp_filters_d[2].set_cutoff_frequency(_loop_update_rate_hz, _d_term_cutoff_freq.get());
 				}
-			}
-
+                        }
 		}
 
 		perf_end(_loop_perf);
