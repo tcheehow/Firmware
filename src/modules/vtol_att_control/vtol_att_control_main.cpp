@@ -32,6 +32,10 @@
  ****************************************************************************/
 
 /**
+ * Edited VTOL_att_control_main.cpp by Low Jun En <lowjunen@gmail.com>
+ *
+ * Original credits is below.
+ *
  * @file VTOL_att_control_main.cpp
  * Implementation of an attitude controller for VTOL airframes. This module receives data
  * from both the fixed wing- and the multicopter attitude controllers and processes it.
@@ -700,7 +704,7 @@ void VtolAttitudeControl::task_main()
 
 			// got data from mc attitude controller
 			_vtol_type->update_mc_state();
-			fill_mc_att_rates_sp();
+                        fill_mc_att_rates_sp();
 
 		} else if (_vtol_type->get_mode() == FIXED_WING) {
 
@@ -728,37 +732,42 @@ void VtolAttitudeControl::task_main()
 			fill_mc_att_rates_sp();
 		}
 
-		_vtol_type->fill_actuator_outputs();
+                _vtol_type->fill_actuator_outputs();
 
-                PX4_INFO("Monoco Enabled: %s", _v_control_mode.flag_control_monoco_enabled ? "true" : "false");
+                /* Only publish if the proper mode(s) are enabled */
+                if (_v_control_mode.flag_control_attitude_enabled ||
+                    _v_control_mode.flag_control_rates_enabled ||
+                    _v_control_mode.flag_control_manual_enabled) {
 
-		/* Only publish if the proper mode(s) are enabled */
-		if (_v_control_mode.flag_control_attitude_enabled ||
-		    _v_control_mode.flag_control_rates_enabled ||
-		    _v_control_mode.flag_control_manual_enabled) {
+                        if (_v_att_sp_pub != nullptr) {
+                                /* publish the attitude setpoint */
+                                orb_publish(ORB_ID(vehicle_attitude_setpoint), _v_att_sp_pub, &_v_att_sp);
 
-			if (_v_att_sp_pub != nullptr) {
-				/* publish the attitude setpoint */
-				orb_publish(ORB_ID(vehicle_attitude_setpoint), _v_att_sp_pub, &_v_att_sp);
-
-			} else {
-				/* advertise and publish */
-				_v_att_sp_pub = orb_advertise(ORB_ID(vehicle_attitude_setpoint), &_v_att_sp);
-			}
-
-			if (_actuators_0_pub != nullptr) {
-				orb_publish(ORB_ID(actuator_controls_0), _actuators_0_pub, &_actuators_out_0);
-
-			} else {
-				_actuators_0_pub = orb_advertise(ORB_ID(actuator_controls_0), &_actuators_out_0);
-			}
-
-			if (_actuators_1_pub != nullptr) {
-				orb_publish(ORB_ID(actuator_controls_1), _actuators_1_pub, &_actuators_out_1);
-
-			} else {
-				_actuators_1_pub = orb_advertise(ORB_ID(actuator_controls_1), &_actuators_out_1);
+                        } else {
+                                /* advertise and publish */
+                                _v_att_sp_pub = orb_advertise(ORB_ID(vehicle_attitude_setpoint), &_v_att_sp);
                         }
+                        if (_actuators_0_pub != nullptr) {
+                                orb_publish(ORB_ID(actuator_controls_0), _actuators_0_pub, &_actuators_out_0);
+
+                        } else {
+                                _actuators_0_pub = orb_advertise(ORB_ID(actuator_controls_0), &_actuators_out_0);
+                        }
+
+                        if (_actuators_1_pub != nullptr) {
+                                orb_publish(ORB_ID(actuator_controls_1), _actuators_1_pub, &_actuators_out_1);
+
+                        } else {
+                                _actuators_1_pub = orb_advertise(ORB_ID(actuator_controls_1), &_actuators_out_1);
+                        }
+
+                        if (_actuators_3_pub != nullptr) {
+                                orb_publish(ORB_ID(actuator_controls_3), _actuators_3_pub, &_actuators_out_3);
+
+                        } else {
+                                _actuators_3_pub = orb_advertise(ORB_ID(actuator_controls_3), &_actuators_out_3);
+                        }
+
                 }
 
 		/*Advertise/Publish vtol vehicle status*/
