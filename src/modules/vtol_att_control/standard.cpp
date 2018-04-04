@@ -397,6 +397,7 @@ void Standard::update_fw_state()
  */
 void Standard::fill_actuator_outputs()
 {
+        PX4_INFO("Monoco Enabled: %s", _v_control_mode->flag_control_monoco_enabled ? "true" : "false");
 	// multirotor controls
 	_actuators_out_0->timestamp = hrt_absolute_time();
 	_actuators_out_0->timestamp_sample = _actuators_mc_in->timestamp_sample;

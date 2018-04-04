@@ -32,6 +32,10 @@
  ****************************************************************************/
 
 /**
+ * Edited VTOL_att_control_main.cpp by Low Jun En <lowjunen@gmail.com>
+ *
+ * Original credits is below.
+ *
  * @file VTOL_att_control_main.cpp
  * Implementation of an attitude controller for VTOL airframes. This module receives data
  * from both the fixed wing- and the multicopter attitude controllers and processes it.
@@ -102,6 +106,7 @@ public:
 	struct actuator_controls_s 			*get_actuators_mc_in() {return &_actuators_mc_in;}
 	struct actuator_controls_s 			*get_actuators_out0() {return &_actuators_out_0;}
 	struct actuator_controls_s 			*get_actuators_out1() {return &_actuators_out_1;}
+	struct actuator_controls_s 			*get_actuators_out3() {return &_actuators_out_3;}
 	struct airspeed_s 				*get_airspeed() {return &_airspeed;}
 	struct position_setpoint_triplet_s		*get_pos_sp_triplet() {return &_pos_sp_triplet;}
 	struct tecs_status_s 				*get_tecs_status() {return &_tecs_status;}
@@ -126,35 +131,36 @@ private:
 	/* handlers for subscriptions */
 	int	_actuator_inputs_fw{-1};	//topic on which the fw_att_controller publishes actuator inputs
 	int	_actuator_inputs_mc{-1};	//topic on which the mc_att_controller publishes actuator inputs
-	int	_airspeed_sub{-1};			// airspeed subscription
+	int	_airspeed_sub{-1};		// airspeed subscription
 	int	_fw_virtual_att_sp_sub{-1};
-	int	_fw_virtual_v_rates_sp_sub{-1};		//vehicle rates setpoint subscription
+	int	_fw_virtual_v_rates_sp_sub{-1};	//vehicle rates setpoint subscription
 	int	_land_detected_sub{-1};
-	int	_local_pos_sp_sub{-1};			// setpoint subscription
-	int	_local_pos_sub{-1};			// sensor subscription
+	int	_local_pos_sp_sub{-1};		// setpoint subscription
+	int	_local_pos_sub{-1};		// sensor subscription
 	int	_manual_control_sp_sub{-1};	//manual control setpoint subscription
 	int	_mc_virtual_att_sp_sub{-1};
-	int	_mc_virtual_v_rates_sp_sub{-1};		//vehicle rates setpoint subscription
-	int	_params_sub{-1};			//parameter updates subscription
-	int	_pos_sp_triplet_sub{-1};			// local position setpoint subscription
+	int	_mc_virtual_v_rates_sp_sub{-1};	//vehicle rates setpoint subscription
+	int	_params_sub{-1};		//parameter updates subscription
+	int	_pos_sp_triplet_sub{-1};	// local position setpoint subscription
 	int	_tecs_status_sub{-1};
-	int	_v_att_sp_sub{-1};			//vehicle attitude setpoint subscription
-	int	_v_att_sub{-1};				//vehicle attitude subscription
+	int	_v_att_sp_sub{-1};		//vehicle attitude setpoint subscription
+	int	_v_att_sub{-1};			//vehicle attitude subscription
 	int	_v_control_mode_sub{-1};	//vehicle control mode subscription
 	int	_vehicle_cmd_sub{-1};
 
 	//handlers for publishers
-	orb_advert_t	_actuators_0_pub{nullptr};		//input for the mixer (roll,pitch,yaw,thrust)
+	orb_advert_t	_actuators_0_pub{nullptr};	//input for the mixer (roll,pitch,yaw,thrust)
 	orb_advert_t	_mavlink_log_pub{nullptr};	// mavlink log uORB handle
 	orb_advert_t	_v_att_sp_pub{nullptr};
 	orb_advert_t	_v_cmd_ack_pub{nullptr};
 	orb_advert_t	_v_rates_sp_pub{nullptr};
 	orb_advert_t	_vtol_vehicle_status_pub{nullptr};
 	orb_advert_t 	_actuators_1_pub{nullptr};
+	orb_advert_t 	_actuators_3_pub{nullptr};
 
 //*******************data containers***********************************************************
 
-	vehicle_attitude_setpoint_s		_v_att_sp{};			//vehicle attitude setpoint
+	vehicle_attitude_setpoint_s		_v_att_sp{};		//vehicle attitude setpoint
 	vehicle_attitude_setpoint_s 		_fw_virtual_att_sp{};	// virtual fw attitude setpoint
 	vehicle_attitude_setpoint_s 		_mc_virtual_att_sp{};	// virtual mc attitude setpoint
 
@@ -162,16 +168,17 @@ private:
 	actuator_controls_s			_actuators_mc_in{};	//actuator controls from mc_att_control
 	actuator_controls_s			_actuators_out_0{};	//actuator controls going to the mc mixer
 	actuator_controls_s			_actuators_out_1{};	//actuator controls going to the fw mixer (used for elevons)
+	actuator_controls_s			_actuators_out_3{};	//actuator controls going to the monocopter mixer
 
-	airspeed_s 				_airspeed{};			// airspeed
-	manual_control_setpoint_s		_manual_control_sp{}; //manual control setpoint
+	airspeed_s 				_airspeed{};		// airspeed
+	manual_control_setpoint_s		_manual_control_sp{};   //manual control setpoint
 	position_setpoint_triplet_s		_pos_sp_triplet{};
 	tecs_status_s				_tecs_status{};
-	vehicle_attitude_s			_v_att{};				//vehicle attitude
+	vehicle_attitude_s			_v_att{};		//vehicle attitude
 	vehicle_command_s			_vehicle_cmd{};
 	vehicle_control_mode_s			_v_control_mode{};	//vehicle control mode
 	vehicle_land_detected_s			_land_detected{};
-	vehicle_local_position_s			_local_pos{};
+	vehicle_local_position_s		_local_pos{};
 	vehicle_local_position_setpoint_s	_local_pos_sp{};
 	vtol_vehicle_status_s 			_vtol_vehicle_status{};
 
@@ -236,6 +243,7 @@ private:
 
 	void 		fill_mc_att_rates_sp();
 	void 		fill_fw_att_rates_sp();
+	void		monoco_control();		// Simple monocopter controller
 
 	void		handle_command();
 };
