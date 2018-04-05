@@ -128,15 +128,17 @@ void Thor::update_vtol_state()
 		case FW_MODE:
 			break;
 
-		case TRANSITION_FRONT_P1:
 
-			// check if we have reached airspeed  and pitch angle to switch to TRANSITION P2 mode
-			if ((_airspeed->indicated_airspeed_m_s >= _params->transition_airspeed
-			     && pitch <= PITCH_TRANSITION_FRONT_P1) || can_transition_on_ground()) {
-				_vtol_schedule.flight_mode = FW_MODE;
-			}
+                case TRANSITION_FRONT_P1: {
+                    bool airspeed_condition_satisfied = _airspeed->indicated_airspeed_m_s >= _params->transition_airspeed;
+                    airspeed_condition_satisfied |= _params->airspeed_disabled;
 
-			break;
+                    // check if we have reached airspeed  and pitch angle to switch to TRANSITION P2 mode
+                    if ((airspeed_condition_satisfied && pitch <= PITCH_TRANSITION_FRONT_P1) || can_transition_on_ground()) {
+                        _vtol_schedule.flight_mode = FW_MODE;
+                    }
+                    break;
+                }
 
 		case TRANSITION_BACK:
 			// failsafe into fixed wing mode
@@ -287,6 +289,9 @@ void Thor::fill_actuator_outputs()
 
                 float des_roll  = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL];
                 float des_pitch = _actuators_mc_in->control[actuator_controls_s::INDEX_PITCH];
+                float des_dir   = atan2(des_pitch, des_roll);
+
+                float flap_cmd  = sin(heading - des_dir);
 
                 _actuators_out_0->timestamp = _actuators_mc_in->timestamp;
                 _actuators_out_0->control[0] = 0;
@@ -295,8 +300,8 @@ void Thor::fill_actuator_outputs()
                 _actuators_out_0->control[3] = 0;
                 _actuators_out_0->control[4] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
                 _actuators_out_0->control[5] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
-                _actuators_out_0->control[6] = des_pitch;//sin(12*M_PI*hrt_absolute_time()/1000000.0);
-                _actuators_out_0->control[7] = des_roll;//0;
+                _actuators_out_0->control[6] =  flap_cmd;
+                _actuators_out_0->control[7] = -flap_cmd;
 
                 PX4_INFO("%3.3f",(double)heading);
             } else {
