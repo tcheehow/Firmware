@@ -101,12 +101,17 @@ VtolAttitudeControl::VtolAttitudeControl()
 
 	if (_params.vtol_type == vtol_type::TAILSITTER) {
 		_vtol_type = new Tailsitter(this);
+                PX4_INFO("Tailsitter");
 
 	} else if (_params.vtol_type == vtol_type::TILTROTOR) {
 		_vtol_type = new Tiltrotor(this);
 
 	} else if (_params.vtol_type == vtol_type::STANDARD) {
 		_vtol_type = new Standard(this);
+
+        } else if (_params.vtol_type == vtol_type::THOR) {
+                _vtol_type = new Thor(this);
+                PX4_INFO("THOR");
 
 	} else {
 		_task_should_exit = true;
@@ -754,13 +759,6 @@ void VtolAttitudeControl::task_main()
 
                         } else {
                                 _actuators_1_pub = orb_advertise(ORB_ID(actuator_controls_1), &_actuators_out_1);
-                        }
-
-                        if (_actuators_3_pub != nullptr) {
-                                orb_publish(ORB_ID(actuator_controls_3), _actuators_3_pub, &_actuators_out_3);
-
-                        } else {
-                                _actuators_3_pub = orb_advertise(ORB_ID(actuator_controls_3), &_actuators_out_3);
                         }
 
                 }
