@@ -86,6 +86,7 @@
 #include "tiltrotor.h"
 #include "tailsitter.h"
 #include "standard.h"
+#include "thor.h"
 
 
 extern "C" __EXPORT int vtol_att_control_main(int argc, char *argv[]);
@@ -106,7 +107,6 @@ public:
 	struct actuator_controls_s 			*get_actuators_mc_in() {return &_actuators_mc_in;}
 	struct actuator_controls_s 			*get_actuators_out0() {return &_actuators_out_0;}
 	struct actuator_controls_s 			*get_actuators_out1() {return &_actuators_out_1;}
-	struct actuator_controls_s 			*get_actuators_out3() {return &_actuators_out_3;}
 	struct airspeed_s 				*get_airspeed() {return &_airspeed;}
 	struct position_setpoint_triplet_s		*get_pos_sp_triplet() {return &_pos_sp_triplet;}
 	struct tecs_status_s 				*get_tecs_status() {return &_tecs_status;}
@@ -156,7 +156,6 @@ private:
 	orb_advert_t	_v_rates_sp_pub{nullptr};
 	orb_advert_t	_vtol_vehicle_status_pub{nullptr};
 	orb_advert_t 	_actuators_1_pub{nullptr};
-	orb_advert_t 	_actuators_3_pub{nullptr};
 
 //*******************data containers***********************************************************
 
@@ -168,7 +167,6 @@ private:
 	actuator_controls_s			_actuators_mc_in{};	//actuator controls from mc_att_control
 	actuator_controls_s			_actuators_out_0{};	//actuator controls going to the mc mixer
 	actuator_controls_s			_actuators_out_1{};	//actuator controls going to the fw mixer (used for elevons)
-	actuator_controls_s			_actuators_out_3{};	//actuator controls going to the monocopter mixer
 
 	airspeed_s 				_airspeed{};		// airspeed
 	manual_control_setpoint_s		_manual_control_sp{};   //manual control setpoint
@@ -243,7 +241,6 @@ private:
 
 	void 		fill_mc_att_rates_sp();
 	void 		fill_fw_att_rates_sp();
-	void		monoco_control();		// Simple monocopter controller
 
 	void		handle_command();
 };

@@ -13,7 +13,7 @@
 
 # @maintainer Low Jun En <junen_low@sutd.edu.sg>
 #
-# TODO: Separate the motor and servo rates to 400 and 50 respectively.
+# TODO: PARAM SET in the if loops seems to not be registering (not completely at least).
 
 
 ###############
@@ -41,11 +41,14 @@ then
 
 	param set VT_MOT_COUNT 2
 	param set VT_IDLE_PWM_MC  1080
-	param set VT_TYPE 0
+	param set VT_TYPE 3
 	param set MAV_TYPE 19
 	param set VT_ELEV_MC_LOCK 0
 fi
 
+# For reasons beyond my understanding, VT_TYPE doesn't get set in the autocnf (it still sets it to tailsitter [0]).
+param set VT_TYPE 3
+
 set MIXER THOR
 
-set PWM_OUT 1234
+set PWM_OUT 123456
