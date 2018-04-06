@@ -37,3 +37,15 @@
  *
  * @author Low Jun En <lowjunen@gmail.com>
  */
+
+/**
+ * Monocopter Cyclic P Gain
+ *
+ * @min 0
+ * @max 3
+ * @increment 0.01
+ * @decimal 2
+ * @group VTOL Attitude Control
+*/
+
+PARAM_DEFINE_FLOAT(VT_THOR_CYCLIC_P, 1.0f) 

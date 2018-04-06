@@ -1,15 +1,15 @@
 #!nsh
 #
-# @name THOR Monocopter x
+# @name THOR
 #
-# @type Hybrid
-# @class Copter
+# @type  Tri-Mode VTOL
+# @class VTOL
 #
-# @output MOTOR 1
-# @output MOTOR 2
-# @output COLLECTIVE SERVO 1
-# @output CYCLIC SERVO 1
-# @output CYCLIC SERVO 2
+# @output MAIN1 motor left
+# @output MAIN2 motor right
+# @output MAIN4 collective
+# @output MAIN5 cyclic left
+# @output MAIN6 cyclic right
 
 # @maintainer Low Jun En <junen_low@sutd.edu.sg>
 #
@@ -44,10 +44,12 @@ then
 	param set VT_TYPE 3
 	param set MAV_TYPE 19
 	param set VT_ELEV_MC_LOCK 0
+	param set VT_THOR_CYCLIC_P 1
 fi
 
 # For reasons beyond my understanding, VT_TYPE doesn't get set in the autocnf (it still sets it to tailsitter [0]).
 param set VT_TYPE 3
+#param set VT_THOR_CYCLIC_P 1
 
 set MIXER THOR
 
