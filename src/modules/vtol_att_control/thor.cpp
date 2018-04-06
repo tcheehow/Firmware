@@ -61,6 +61,7 @@ Thor::Thor(VtolAttitudeControl *attc) :
 	_flag_was_in_trans_mode = false;
 
         _params_handles_thor.front_trans_dur_p2 = param_find("VT_TRANS_P2_DUR");
+        _params_handles_thor.thor_cyclic_p = param_find("VT_THOR_CYCLIC_P");
 }
 
 Thor::~Thor()
@@ -72,10 +73,14 @@ void
 Thor::parameters_update()
 {
 	float v;
+        float P_Mono;
 
 	/* vtol front transition phase 2 duration */
         param_get(_params_handles_thor.front_trans_dur_p2, &v);
-        _params_thor.front_trans_dur_p2 = v;
+        _params_thor.front_trans_dur_p2 = v;        
+
+        param_get(_params_handles_thor.thor_cyclic_p, &P_Mono);
+        _params_thor.thor_cyclic_p = P_Mono;
 }
 
 void Thor::update_vtol_state()
@@ -289,9 +294,10 @@ void Thor::fill_actuator_outputs()
 
                 float des_roll  = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL];
                 float des_pitch = _actuators_mc_in->control[actuator_controls_s::INDEX_PITCH];
-                float des_dir   = atan2(des_pitch, des_roll);
+                float des_dir   = atan2f(des_pitch, des_roll);
+                float des_mag   = sqrtf(powf(des_pitch,2) + powf(des_roll,2));
 
-                float flap_cmd  = sin(heading - des_dir);
+                float flap_cmd  =  des_mag * sinf(heading - des_dir);
 
                 _actuators_out_0->timestamp = _actuators_mc_in->timestamp;
                 _actuators_out_0->control[0] = 0;
@@ -303,7 +309,8 @@ void Thor::fill_actuator_outputs()
                 _actuators_out_0->control[6] =  flap_cmd;
                 _actuators_out_0->control[7] = -flap_cmd;
 
-                PX4_INFO("%3.3f",(double)heading);
+                //PX4_INFO("Heading: %3.3f   Magnitude: %3.3f",(double)heading, (double)des_mag);
+                //PX4_INFO("P Gain: %1.3f",(double)_params_thor.thor_cyclic_p);
             } else {
 		_actuators_out_0->timestamp = _actuators_mc_in->timestamp;
 		_actuators_out_0->control[actuator_controls_s::INDEX_ROLL] = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL];

@@ -64,10 +64,12 @@ private:
 
 	struct {
 		float front_trans_dur_p2;
+                float thor_cyclic_p;
         } _params_thor;
 
 	struct {
 		param_t front_trans_dur_p2;
+                param_t thor_cyclic_p;
         } _params_handles_thor;
 
 	enum vtol_mode {
