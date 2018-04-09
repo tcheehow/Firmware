@@ -292,8 +292,8 @@ void Thor::fill_actuator_outputs()
                 matrix::Eulerf euler = matrix::Quatf(_v_att->q);
                 float heading = euler.psi();
 
-                float des_roll  = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL];
-                float des_pitch = _actuators_mc_in->control[actuator_controls_s::INDEX_PITCH];
+                float des_roll  = _manual_control_sp->x;
+                float des_pitch = _manual_control_sp->y;
                 float des_dir   = atan2f(des_pitch, des_roll);
                 float des_mag   = sqrtf(powf(des_pitch,2) + powf(des_roll,2));
 
@@ -328,7 +328,7 @@ void Thor::fill_actuator_outputs()
                 _actuators_out_1->control[6] = 0;
                 _actuators_out_1->control[7] = 0;
 
-                PX4_INFO("DesRoll Cmd: %3.3f  DesPitch Cmd: %3.3f",(double)des_roll,(double)des_pitch);
+                //PX4_INFO("DesRoll Cmd: %3.3f  DesPitch Cmd: %3.3f",(double)des_roll,(double)des_pitch);
                 //PX4_INFO("P Gain: %1.3f",(double)_params_thor.thor_cyclic_p);
             } else {
 		_actuators_out_0->timestamp = _actuators_mc_in->timestamp;
