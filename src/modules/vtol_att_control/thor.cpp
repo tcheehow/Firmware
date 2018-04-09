@@ -298,7 +298,6 @@ void Thor::fill_actuator_outputs()
                 float des_mag   = sqrtf(powf(des_pitch,2) + powf(des_roll,2));
 
                 float flap_cmd  =  des_mag * sinf(heading - des_dir);
-
                 _actuators_out_0->timestamp = _actuators_mc_in->timestamp;
                 _actuators_out_0->control[0] = 0;
                 _actuators_out_0->control[1] = 0;
@@ -308,8 +307,28 @@ void Thor::fill_actuator_outputs()
                 _actuators_out_0->control[5] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
                 _actuators_out_0->control[6] =  flap_cmd;
                 _actuators_out_0->control[7] = -flap_cmd;
+/*
+                _actuators_out_0->timestamp = _actuators_mc_in->timestamp;
+                _actuators_out_0->control[0] = 0;
+                _actuators_out_0->control[1] = 0;
+                _actuators_out_0->control[2] = 0;
+                _actuators_out_0->control[3] = 0;
+                _actuators_out_0->control[4] = 0;
+                _actuators_out_0->control[5] = 0;
+                _actuators_out_0->control[6] = 0;
+                _actuators_out_0->control[7] = 0;
+*/
+                _actuators_out_1->timestamp = _actuators_mc_in->timestamp;
+                _actuators_out_1->control[0] = 0;
+                _actuators_out_1->control[1] = 0;
+                _actuators_out_1->control[2] = 0;
+                _actuators_out_1->control[3] = 0;
+                _actuators_out_1->control[4] = 0;
+                _actuators_out_1->control[5] = 0;
+                _actuators_out_1->control[6] = 0;
+                _actuators_out_1->control[7] = 0;
 
-                //PX4_INFO("Heading: %3.3f   Magnitude: %3.3f",(double)heading, (double)des_mag);
+                PX4_INFO("DesRoll Cmd: %3.3f  DesPitch Cmd: %3.3f",(double)des_roll,(double)des_pitch);
                 //PX4_INFO("P Gain: %1.3f",(double)_params_thor.thor_cyclic_p);
             } else {
 		_actuators_out_0->timestamp = _actuators_mc_in->timestamp;
