@@ -55,9 +55,10 @@ VtolType::VtolType(VtolAttitudeControl *att_controller) :
 	_mc_virtual_att_sp = _attc->get_mc_virtual_att_sp();
 	_fw_virtual_att_sp = _attc->get_fw_virtual_att_sp();
 	_v_control_mode = _attc->get_control_mode();
-	_vtol_vehicle_status = _attc->get_vtol_vehicle_status();
+        _vtol_vehicle_status = _attc->get_vtol_vehicle_status();
 	_actuators_out_0 = _attc->get_actuators_out0();
 	_actuators_out_1 = _attc->get_actuators_out1();
+        _manual_control_sp = _attc->get_rc_manual_in();
 	_actuators_mc_in = _attc->get_actuators_mc_in();
 	_actuators_fw_in = _attc->get_actuators_fw_in();
 	_local_pos = _attc->get_local_pos();

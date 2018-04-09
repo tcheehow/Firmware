@@ -105,6 +105,7 @@ public:
 
 	struct actuator_controls_s 			*get_actuators_fw_in() {return &_actuators_fw_in;}
 	struct actuator_controls_s 			*get_actuators_mc_in() {return &_actuators_mc_in;}
+        struct manual_control_setpoint_s                *get_rc_manual_in() {return &_manual_control_sp;}
 	struct actuator_controls_s 			*get_actuators_out0() {return &_actuators_out_0;}
 	struct actuator_controls_s 			*get_actuators_out1() {return &_actuators_out_1;}
 	struct airspeed_s 				*get_airspeed() {return &_airspeed;}
