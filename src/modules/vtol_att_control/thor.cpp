@@ -302,9 +302,9 @@ void Thor::fill_actuator_outputs()
                 _actuators_out_0->control[0] = 0;
                 _actuators_out_0->control[1] = 0;
                 _actuators_out_0->control[2] = 0;
-                _actuators_out_0->control[3] = 0;
-                _actuators_out_0->control[4] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
-                _actuators_out_0->control[5] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
+                _actuators_out_0->control[3] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
+                _actuators_out_0->control[4] = 0;
+                _actuators_out_0->control[5] = 0;
                 _actuators_out_0->control[6] =  flap_cmd;
                 _actuators_out_0->control[7] = -flap_cmd;
 /*
