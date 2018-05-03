@@ -64,25 +64,43 @@ private:
 
 	struct {
 		float front_trans_dur_p2;
-                float thor_cyclic_p;
+                float thor_rps_targ;
+                float thor_rps_p;
+                float thor_rps_i;
+                float thor_coll_p;
         } _params_thor;
 
 	struct {
 		param_t front_trans_dur_p2;
-                param_t thor_cyclic_p;
+                param_t thor_rps_targ;
+                param_t thor_rps_p;
+                param_t thor_rps_i;
+                param_t thor_coll_p;
         } _params_handles_thor;
 
 	enum vtol_mode {
 		MC_MODE = 0,			/**< vtol is in multicopter mode */
-		TRANSITION_FRONT_P1,	/**< vtol is in front transition part 1 mode */
+                TRANSITION_FRONT_P1,            /**< vtol is in front transition part 1 mode */
 		TRANSITION_BACK,		/**< vtol is in back transition mode */
-		FW_MODE					/**< vtol is in fixed wing mode */
+                FW_MODE				/**< vtol is in fixed wing mode */
 	};
 
 	struct {
-		vtol_mode flight_mode;			/**< vtol flight mode, defined by enum vtol_mode */
+                vtol_mode flight_mode;		/**< vtol flight mode, defined by enum vtol_mode */
 		hrt_abstime transition_start;	/**< absoulte time at which front transition started */
 	} _vtol_schedule;
+
+        struct {
+            hrt_abstime now_time;
+            float heading;
+
+            hrt_abstime last_time;
+            float rot_err_p;
+            float rot_err_i;
+
+            float flap_cmd;
+            float throttle_cmd;
+         } _monoco_cmds;
 
 	float _thrust_transition_start; // throttle value when we start the front transition
 	float _yaw_transition;	// yaw angle in which transition will take place

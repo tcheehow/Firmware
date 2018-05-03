@@ -61,7 +61,11 @@ Thor::Thor(VtolAttitudeControl *attc) :
 	_flag_was_in_trans_mode = false;
 
         _params_handles_thor.front_trans_dur_p2 = param_find("VT_TRANS_P2_DUR");
-        _params_handles_thor.thor_cyclic_p = param_find("VT_THOR_CYCLIC_P");
+
+        _params_handles_thor.thor_rps_targ = param_find("VT_THOR_RPS_TARG");
+        _params_handles_thor.thor_rps_p    = param_find("VT_THOR_RPS_P");
+        _params_handles_thor.thor_rps_i    = param_find("VT_THOR_RPS_I");
+        _params_handles_thor.thor_coll_p   = param_find("VT_THOR_COLL_P");
 }
 
 Thor::~Thor()
@@ -73,14 +77,22 @@ void
 Thor::parameters_update()
 {
 	float v;
-        float P_Mono;
 
-	/* vtol front transition phase 2 duration */
+        /* vtol front transition phase 2 duration */
         param_get(_params_handles_thor.front_trans_dur_p2, &v);
-        _params_thor.front_trans_dur_p2 = v;        
+        _params_thor.front_trans_dur_p2 = v;
 
-        param_get(_params_handles_thor.thor_cyclic_p, &P_Mono);
-        _params_thor.thor_cyclic_p = P_Mono;
+        param_get(_params_handles_thor.thor_rps_targ, &v);
+        _params_thor.thor_rps_targ = v;
+
+        param_get(_params_handles_thor.thor_rps_p, &v);
+        _params_thor.thor_rps_p = v;
+
+        param_get(_params_handles_thor.thor_rps_i, &v);
+        _params_thor.thor_rps_i = v;
+
+        param_get(_params_handles_thor.thor_coll_p, &v);
+        _params_thor.thor_coll_p = v;
 }
 
 void Thor::update_vtol_state()
@@ -289,35 +301,46 @@ void Thor::fill_actuator_outputs()
         case ROTARY_WING:
             if (_v_control_mode->flag_control_monoco_enabled) {
 
-                matrix::Eulerf euler = matrix::Quatf(_v_att->q);
-                float heading = euler.psi();
+                // Solve Direction
+                _monoco_cmds.now_time = hrt_absolute_time();
 
-                float des_roll  = _manual_control_sp->x;
-                float des_pitch = _manual_control_sp->y;
-                float des_dir   = atan2f(des_pitch, des_roll);
-                float des_mag   = sqrtf(powf(des_pitch,2) + powf(des_roll,2));
+                matrix::Eulerf euler  = matrix::Quatf(_v_att->q);
+                _monoco_cmds.heading  = euler.psi();
 
-                float flap_cmd  =  des_mag * sinf(heading - des_dir);
+                float des_dir   = atan2f(_manual_control_sp->y, _manual_control_sp->x);
+                float des_mag   = sqrtf(powf(_manual_control_sp->y,2) + powf(_manual_control_sp->x,2));
+
+                float cyclic_cmd  =  des_mag * sinf(_monoco_cmds.heading - des_dir);
+
+                // Solve Throttle
+                float collective_cmd = 0;
+                float throttle_cmd = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
+                float delta_t = _monoco_cmds.now_time - _monoco_cmds.last_time;
+
+                _monoco_cmds.rot_err_p = (_params_thor.thor_rps_targ + (float)_v_att->yawspeed);  // yaw speed is negative in the counter-clockwise direction
+                _monoco_cmds.rot_err_i = _monoco_cmds.rot_err_i + (_monoco_cmds.rot_err_p*delta_t);
+                _monoco_cmds.last_time = hrt_absolute_time();
+
+                if (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] > 0.3f) {
+                    collective_cmd = _params_thor.thor_coll_p * (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE]- 0.3f);
+                    throttle_cmd = _params_thor.thor_rps_p * _monoco_cmds.rot_err_p + _params_thor.thor_rps_i * _monoco_cmds.rot_err_i;
+                    //PX4_INFO("RPS P: %1.3f",(double)_params_thor.thor_rps_p);
+                } else {
+                    // Carry on.
+                }
+
+
+                // Send out commands
                 _actuators_out_0->timestamp = _actuators_mc_in->timestamp;
                 _actuators_out_0->control[0] = 0;
                 _actuators_out_0->control[1] = 0;
                 _actuators_out_0->control[2] = 0;
-                _actuators_out_0->control[3] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
+                _actuators_out_0->control[3] = throttle_cmd;
                 _actuators_out_0->control[4] = 0;
                 _actuators_out_0->control[5] = 0;
-                _actuators_out_0->control[6] =  flap_cmd;
-                _actuators_out_0->control[7] = -flap_cmd;
-/*
-                _actuators_out_0->timestamp = _actuators_mc_in->timestamp;
-                _actuators_out_0->control[0] = 0;
-                _actuators_out_0->control[1] = 0;
-                _actuators_out_0->control[2] = 0;
-                _actuators_out_0->control[3] = 0;
-                _actuators_out_0->control[4] = 0;
-                _actuators_out_0->control[5] = 0;
-                _actuators_out_0->control[6] = 0;
-                _actuators_out_0->control[7] = 0;
-*/
+                _actuators_out_0->control[6] = collective_cmd + cyclic_cmd;
+                _actuators_out_0->control[7] = collective_cmd - cyclic_cmd;
+
                 _actuators_out_1->timestamp = _actuators_mc_in->timestamp;
                 _actuators_out_1->control[0] = 0;
                 _actuators_out_1->control[1] = 0;
@@ -328,8 +351,6 @@ void Thor::fill_actuator_outputs()
                 _actuators_out_1->control[6] = 0;
                 _actuators_out_1->control[7] = 0;
 
-                //PX4_INFO("DesRoll Cmd: %3.3f  DesPitch Cmd: %3.3f",(double)des_roll,(double)des_pitch);
-                //PX4_INFO("P Gain: %1.3f",(double)_params_thor.thor_cyclic_p);
             } else {
 		_actuators_out_0->timestamp = _actuators_mc_in->timestamp;
 		_actuators_out_0->control[actuator_controls_s::INDEX_ROLL] = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL];

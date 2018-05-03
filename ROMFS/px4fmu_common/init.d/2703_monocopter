@@ -45,11 +45,15 @@ then
 	param set MAV_TYPE 19
 	param set VT_ELEV_MC_LOCK 0
 	param set VT_THOR_CYCLIC_P 1
+	param set VT_THOR_OMEGAZ_P 0.05
 fi
 
 # For reasons beyond my understanding, VT_TYPE doesn't get set in the autocnf (it still sets it to tailsitter [0]).
 param set VT_TYPE 3
-#param set VT_THOR_CYCLIC_P 1
+param set VT_THOR_RPS_TARG 29.7
+param set VT_THOR_RPS_P 0.082
+param set VT_THOR_RPS_I 0.0
+param set VT_THOR_COLL_P 0.5
 
 set MIXER THOR
 
