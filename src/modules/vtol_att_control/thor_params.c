@@ -39,13 +39,47 @@
  */
 
 /**
- * Monocopter Cyclic P Gain
+ * Monocopter Target RPS
  *
- * @min 0
- * @max 3
- * @increment 0.01
- * @decimal 2
- * @group VTOL Attitude Control
-*/
+ * @min 0.0
+ * @max 100.0
+ * @increment 0.50
+ * @decimal 3
+ * @group Monocopter Control
+ */
+PARAM_DEFINE_FLOAT(VT_THOR_RPS_TARG, 0.0f);
 
-PARAM_DEFINE_FLOAT(VT_THOR_CYCLIC_P, 1.0f) 
+/**
+ * Monocopter RPS P Gain
+ *
+ * @min 0.0
+ * @max 10.0
+ * @increment 0.01
+ * @decimal 3
+ * @group Monocopter Control
+ */
+PARAM_DEFINE_FLOAT(VT_THOR_RPS_P, 0.0f);
+
+/**
+ * Monocopter RPS I Gain
+ *
+ * @min 0.0
+ * @max 10.0
+ * @increment 0.01
+ * @decimal 3
+ * @group Monocopter Control
+ */
+PARAM_DEFINE_FLOAT(VT_THOR_RPS_I, 0.0f);
+
+/**
+ * Monocopter Collective P Gain
+ *
+ * @min 0.0
+ * @max 1.0
+ * @increment 0.01
+ * @decimal 3
+ * @group Monocopter Control
+ */
+PARAM_DEFINE_FLOAT(VT_THOR_COLL_P, 0.0f);
+
+

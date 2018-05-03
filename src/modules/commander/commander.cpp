@@ -2297,6 +2297,7 @@ Commander::run()
 				    internal_state.main_state != commander_state_s::MAIN_STATE_ACRO &&
 				    internal_state.main_state != commander_state_s::MAIN_STATE_STAB &&
 				    internal_state.main_state != commander_state_s::MAIN_STATE_RATTITUDE &&
+                                    internal_state.main_state != commander_state_s::MAIN_STATE_MONOCO &&
 				    !land_detector.landed) {
 					print_reject_arm("NOT DISARMING: Not in manual mode or landed yet.");
 
@@ -2337,6 +2338,7 @@ Commander::run()
 					    && (internal_state.main_state != commander_state_s::MAIN_STATE_ALTCTL)
 					    && (internal_state.main_state != commander_state_s::MAIN_STATE_POSCTL)
 					    && (internal_state.main_state != commander_state_s::MAIN_STATE_RATTITUDE)
+                                            && (internal_state.main_state != commander_state_s::MAIN_STATE_MONOCO)
 					   ) {
 						print_reject_arm("NOT ARMING: Switch to a manual mode first.");
 
