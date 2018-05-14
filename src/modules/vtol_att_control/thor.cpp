@@ -313,9 +313,9 @@ void Thor::fill_actuator_outputs()
                 float cyclic_cmd  =  des_mag * sinf(_monoco_cmds.heading - des_dir);
 
                 // Solve Throttle
-                float collective_cmd = 0;
-                float throttle_cmd = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
-                float delta_t = _monoco_cmds.now_time - _monoco_cmds.last_time;
+                float collective_cmd;
+                float throttle_cmd;
+                float delta_t = (_monoco_cmds.now_time - _monoco_cmds.last_time)/1000000.0f;
 
                 _monoco_cmds.rot_err_p = (_params_thor.thor_rps_targ + (float)_v_att->yawspeed);  // yaw speed is negative in the counter-clockwise direction
                 _monoco_cmds.rot_err_i = _monoco_cmds.rot_err_i + (_monoco_cmds.rot_err_p*delta_t);
@@ -326,7 +326,9 @@ void Thor::fill_actuator_outputs()
                     throttle_cmd = _params_thor.thor_rps_p * _monoco_cmds.rot_err_p + _params_thor.thor_rps_i * _monoco_cmds.rot_err_i;
                     //PX4_INFO("RPS P: %1.3f",(double)_params_thor.thor_rps_p);
                 } else {
-                    // Carry on.
+                    _monoco_cmds.rot_err_i = 0;
+                    collective_cmd = 0;
+                    throttle_cmd = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
                 }
 
 

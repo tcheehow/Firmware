@@ -52,7 +52,7 @@ fi
 param set VT_TYPE 3
 param set VT_THOR_RPS_TARG 29.7
 param set VT_THOR_RPS_P 0.082
-param set VT_THOR_RPS_I 0.0
+param set VT_THOR_RPS_I 0.012
 param set VT_THOR_COLL_P 0.5
 
 set MIXER THOR
