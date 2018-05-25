@@ -310,7 +310,7 @@ void Thor::fill_actuator_outputs()
                 float des_dir   = atan2f(_manual_control_sp->y, _manual_control_sp->x);
                 float des_mag   = sqrtf(powf(_manual_control_sp->y,2) + powf(_manual_control_sp->x,2));
 
-                float cyclic_cmd  =  des_mag * sinf(_monoco_cmds.heading - des_dir);
+                float cyclic_cmd  =  -des_mag * sinf(_monoco_cmds.heading - des_dir);
 
                 // Solve Throttle
                 float collective_cmd;
@@ -321,8 +321,8 @@ void Thor::fill_actuator_outputs()
                 _monoco_cmds.rot_err_i = _monoco_cmds.rot_err_i + (_monoco_cmds.rot_err_p*delta_t);
                 _monoco_cmds.last_time = hrt_absolute_time();
 
-                if (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] > 0.3f) {
-                    collective_cmd = _params_thor.thor_coll_p * (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE]- 0.3f);
+                if (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] > 0.4f) {
+                    collective_cmd = _params_thor.thor_coll_p * (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE]- 0.4f);
                     throttle_cmd = _params_thor.thor_rps_p * _monoco_cmds.rot_err_p + _params_thor.thor_rps_i * _monoco_cmds.rot_err_i;
                     //PX4_INFO("RPS P: %1.3f",(double)_params_thor.thor_rps_p);
                 } else {
