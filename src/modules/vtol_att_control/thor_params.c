@@ -82,4 +82,15 @@ PARAM_DEFINE_FLOAT(VT_THOR_RPS_I, 0.0f);
  */
 PARAM_DEFINE_FLOAT(VT_THOR_COLL_P, 0.0f);
 
+/**
+ * Monocopter Cyclic P Gain
+ *
+ * @min 0.0
+ * @max 1.0
+ * @increment 0.01
+ * @decimal 3
+ * @group Monocopter Control
+ */
+PARAM_DEFINE_FLOAT(VT_THOR_CYC_P, 0.0f);
+
 
