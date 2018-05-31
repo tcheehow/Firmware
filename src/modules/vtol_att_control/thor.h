@@ -45,6 +45,7 @@
 #include <systemlib/perf_counter.h>  /** is it necsacery? **/
 #include <systemlib/param/param.h>
 #include <drivers/drv_hrt.h>
+#include <uORB/topics/monocopter_command.h>
 
 class Thor : public VtolType
 {
@@ -62,12 +63,19 @@ public:
 
 private:
 
+        // handlers for publishers
+        orb_advert_t	_monocopter_cmds_pub{nullptr};	// publisher for monocopter command debugging
+
+        // data containers
+        monocopter_command_s           _monocopter_cmds{};
+
 	struct {
 		float front_trans_dur_p2;
                 float thor_rps_targ;
                 float thor_rps_p;
                 float thor_rps_i;
                 float thor_coll_p;
+                float thor_cyc_p;
         } _params_thor;
 
 	struct {
@@ -76,6 +84,7 @@ private:
                 param_t thor_rps_p;
                 param_t thor_rps_i;
                 param_t thor_coll_p;
+                param_t thor_cyc_p;
         } _params_handles_thor;
 
 	enum vtol_mode {
@@ -91,16 +100,17 @@ private:
 	} _vtol_schedule;
 
         struct {
-            hrt_abstime now_time;
-            float heading;
+            float new_time;
+            float old_time;
+            float loop_time;
 
-            hrt_abstime last_time;
             float rot_err_p;
             float rot_err_i;
 
-            float flap_cmd;
-            float throttle_cmd;
-         } _monoco_cmds;
+            float new_omega;
+            float new_psi;
+            float old_psi;
+        } _monocopter_vars;
 
 	float _thrust_transition_start; // throttle value when we start the front transition
 	float _yaw_transition;	// yaw angle in which transition will take place
