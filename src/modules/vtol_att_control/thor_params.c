@@ -47,7 +47,7 @@
  * @decimal 3
  * @group Monocopter Control
  */
-PARAM_DEFINE_FLOAT(VT_THOR_RPS_TARG, 0.0f);
+PARAM_DEFINE_FLOAT(VT_THOR_RPS_TARG, 31.0f);
 
 /**
  * Monocopter RPS P Gain
@@ -58,7 +58,7 @@ PARAM_DEFINE_FLOAT(VT_THOR_RPS_TARG, 0.0f);
  * @decimal 3
  * @group Monocopter Control
  */
-PARAM_DEFINE_FLOAT(VT_THOR_RPS_P, 0.0f);
+PARAM_DEFINE_FLOAT(VT_THOR_RPS_P, 0.12f);
 
 /**
  * Monocopter RPS I Gain
@@ -69,7 +69,7 @@ PARAM_DEFINE_FLOAT(VT_THOR_RPS_P, 0.0f);
  * @decimal 3
  * @group Monocopter Control
  */
-PARAM_DEFINE_FLOAT(VT_THOR_RPS_I, 0.0f);
+PARAM_DEFINE_FLOAT(VT_THOR_RPS_I, 0.04f);
 
 /**
  * Monocopter Collective P Gain
@@ -80,7 +80,7 @@ PARAM_DEFINE_FLOAT(VT_THOR_RPS_I, 0.0f);
  * @decimal 3
  * @group Monocopter Control
  */
-PARAM_DEFINE_FLOAT(VT_THOR_COLL_P, 0.0f);
+PARAM_DEFINE_FLOAT(VT_THOR_COLL_P, 0.5f);
 
 /**
  * Monocopter Cyclic P Gain
@@ -91,6 +91,28 @@ PARAM_DEFINE_FLOAT(VT_THOR_COLL_P, 0.0f);
  * @decimal 3
  * @group Monocopter Control
  */
-PARAM_DEFINE_FLOAT(VT_THOR_CYC_P, 0.0f);
+PARAM_DEFINE_FLOAT(VT_THOR_CYC_P, 0.3f);
+
+/**
+ * Monocopter RPS Trigger
+ *
+ * @min 0.0
+ * @max 1.0
+ * @increment 0.01
+ * @decimal 3
+ * @group Monocopter Control
+ */
+PARAM_DEFINE_FLOAT(VT_THOR_THR_TRIG, 0.35f);
+
+/**
+ * Monocopter Direction Trigger Threshold
+ *
+ * @min 0.0
+ * @max 1.0
+ * @increment 0.01
+ * @decimal 3
+ * @group Monocopter Control
+ */
+PARAM_DEFINE_FLOAT(VT_THOR_DIR_TRIG, 0.3f);
 
 

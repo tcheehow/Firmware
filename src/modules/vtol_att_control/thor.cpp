@@ -37,6 +37,7 @@
 * @author Low Jun En	<lowjunen@gmail.com>
 */
 
+#include <math.h>
 #include "thor.h"
 #include "vtol_att_control_main.h"
 
@@ -62,11 +63,13 @@ Thor::Thor(VtolAttitudeControl *attc) :
 
         _params_handles_thor.front_trans_dur_p2 = param_find("VT_TRANS_P2_DUR");
 
-        _params_handles_thor.thor_rps_targ = param_find("VT_THOR_RPS_TARG");
-        _params_handles_thor.thor_rps_p    = param_find("VT_THOR_RPS_P");
-        _params_handles_thor.thor_rps_i    = param_find("VT_THOR_RPS_I");
-        _params_handles_thor.thor_coll_p   = param_find("VT_THOR_COLL_P");
-        _params_handles_thor.thor_cyc_p   = param_find("VT_THOR_COLL_P");
+        _params_handles_thor.thor_rps_targ   = param_find("VT_THOR_RPS_TARG");
+        _params_handles_thor.thor_rps_p      = param_find("VT_THOR_RPS_P");
+        _params_handles_thor.thor_rps_i      = param_find("VT_THOR_RPS_I");
+        _params_handles_thor.thor_coll_p     = param_find("VT_THOR_COLL_P");
+        _params_handles_thor.thor_cyc_p      = param_find("VT_THOR_CYC_P");
+        _params_handles_thor.thor_thr_trig   = param_find("VT_THOR_THR_TRIG");
+        _params_handles_thor.thor_dir_trig   = param_find("VT_THOR_DIR_TRIG");
 }
 
 Thor::~Thor()
@@ -97,6 +100,12 @@ Thor::parameters_update()
 
         param_get(_params_handles_thor.thor_cyc_p, &v);
         _params_thor.thor_cyc_p = v;
+
+        param_get(_params_handles_thor.thor_thr_trig, &v);
+        _params_thor.thor_thr_trig = v;
+
+        param_get(_params_handles_thor.thor_dir_trig, &v);
+        _params_thor.thor_dir_trig = v;
 }
 
 void Thor::update_vtol_state()
@@ -318,6 +327,8 @@ void Thor::fill_actuator_outputs()
                 float des_mag;
                 float cyclic_cmd;
                 float heading;
+                float time_bef;
+                float time_aft;
 
                 // Persistence of Vision
                 float led_line;
@@ -328,13 +339,18 @@ void Thor::fill_actuator_outputs()
 
                 //===============================================================================================================================
                 // Throttle (throttle check separate to prevent sudden take off)
+                _monocopter_vars.rot_err_p = (_params_thor.thor_rps_targ - _monocopter_vars.new_omega);  // yaw speed is negative in the counter-clockwise direction
+                _monocopter_vars.rot_err_i = _monocopter_vars.rot_err_i + (_monocopter_vars.rot_err_p*delta_t);
 
-                if (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] > 0.35f) {
-                    _monocopter_vars.rot_err_p = (_params_thor.thor_rps_targ + (float)_v_att->yawspeed);  // yaw speed is negative in the counter-clockwise direction
-                    _monocopter_vars.rot_err_i = _monocopter_vars.rot_err_i + (_monocopter_vars.rot_err_p*delta_t);
-
-                    collective_cmd = _params_thor.thor_coll_p * (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE]- 0.35f);
+                if (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] >= _params_thor.thor_thr_trig) {
+                    collective_cmd = _params_thor.thor_coll_p * (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE]- _params_thor.thor_thr_trig);
                     throttle_cmd = _params_thor.thor_rps_p * _monocopter_vars.rot_err_p + _params_thor.thor_rps_i * _monocopter_vars.rot_err_i;
+
+                    if (throttle_cmd > 0.6f) {
+                        throttle_cmd = 0.6f;
+                    } else {
+                        // Carry On
+                    }
                 } else {
                     _monocopter_vars.rot_err_i = 0;
                     collective_cmd = 0;
@@ -344,64 +360,35 @@ void Thor::fill_actuator_outputs()
                 //===============================================================================================================================
                 // Direction (throttle check separate to prevent sudden take off)
 
-                if (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] > 0.3f) {
-
-                    //===============================================
-                    // Normal Direction
-                    heading = -euler.psi();
-                    // Experimental Direction
-
-                    float time_bef;
-                    float time_aft;
-                    if (_monocopter_vars.new_psi < -1.5708f && _monocopter_vars.old_psi > 1.5708f) {  // Mag passed the reset mark!
-                        time_bef = _monocopter_vars.old_time + ((3.1416f - _monocopter_vars.old_psi)/_monocopter_vars.new_omega);
-                        time_aft = _monocopter_vars.new_time - ((3.1416f + _monocopter_vars.new_psi)/_monocopter_vars.new_omega);
+                if (_actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] > _params_thor.thor_dir_trig) {
+                    if (_monocopter_vars.new_psi < -M_PI_2_F && _monocopter_vars.old_psi > M_PI_2_F) {  // Mag passed the reset mark!
+                        time_bef = _monocopter_vars.old_time + ((M_PI_F	 - _monocopter_vars.old_psi)/_monocopter_vars.new_omega);
+                        time_aft = _monocopter_vars.new_time - ((M_PI_F	 + _monocopter_vars.new_psi)/_monocopter_vars.new_omega);
                         _monocopter_vars.loop_time = (time_bef + time_aft)/2.0f;
-                        _monocopter_cmds.loop_time = heading;
-
-                        _monocopter_cmds.gymag_heading = -3.1416f + (_monocopter_vars.new_omega * (_monocopter_vars.new_time - _monocopter_vars.loop_time));
                     } else {
-                        _monocopter_cmds.gymag_heading = -3.1416f + (_monocopter_vars.new_omega * (_monocopter_vars.new_time - _monocopter_vars.loop_time));
+                        // Carry On
                     }
 
-                    //===============================================
+                    _monocopter_cmds.gymag_heading = -M_PI_F + (_monocopter_vars.new_omega * (_monocopter_vars.new_time - _monocopter_vars.loop_time));
+                    _monocopter_cmds.loop_time     = _monocopter_vars.loop_time;
 
-                    des_dir   = atan2f(_manual_control_sp->y, _manual_control_sp->x);
-                    des_mag   = _params_thor.thor_cyc_p*(sqrtf(powf(_manual_control_sp->y,2) + powf(_manual_control_sp->x,2)));
-
-                    cyclic_cmd  =  -des_mag * sinf(heading - des_dir);
-
-                    // Publish the debugging data (to log currently)
-                    _monocopter_cmds.timestamp = _monocopter_vars.new_time;
-                    _monocopter_cmds.mag_heading = heading;
-                    _monocopter_cmds.des_dir = des_dir;
-                    _monocopter_cmds.des_mag = des_mag;
+                    heading = _monocopter_cmds.gymag_heading;
                 } else {
                     heading = -euler.psi();
-
-                    des_dir   = atan2f(_manual_control_sp->y, _manual_control_sp->x);
-                    des_mag   = _params_thor.thor_cyc_p*(sqrtf(powf(_manual_control_sp->y,2) + powf(_manual_control_sp->x,2)));
-
-                    cyclic_cmd  =  -des_mag * sinf(heading - des_dir);
-
-                    // Publish the debugging data (to log currently)
-                    _monocopter_cmds.timestamp   = hrt_absolute_time();
-                    _monocopter_cmds.mag_heading = heading;
-                    _monocopter_cmds.des_dir = des_dir;
-                    _monocopter_cmds.des_mag = des_mag;
                 }
+
+                des_dir   = atan2f(-_manual_control_sp->y, _manual_control_sp->x);
+                des_mag   = _params_thor.thor_cyc_p*(sqrtf(powf(_manual_control_sp->y,2) + powf(_manual_control_sp->x,2)));
+                cyclic_cmd  =  des_mag * cosf(heading - des_dir);
 
                 //===============================================================================================================================
                 // Persistence of Vision
 
-                if ((_monocopter_cmds.gymag_heading > 1.3963f) && (_monocopter_cmds.gymag_heading < 1.7453f)) {
+                if ((heading < -1.3963f) && (heading > -1.7453f)) {
                     led_line =  1.0f;
                 } else {
                     led_line = -1.0f;
                 }
-
-                //PX4_INFO("heading: %1.5f   led_line = %d",(double)heading, led_line);
-
 
                 // Send out commands
                 _actuators_out_0->timestamp = _actuators_mc_in->timestamp;
@@ -427,6 +414,15 @@ void Thor::fill_actuator_outputs()
                 // Update last time
                 _monocopter_vars.old_time = hrt_absolute_time()/1000000.0f;
                 _monocopter_vars.old_psi   = -euler.psi();
+
+                //===============================================================================================================================
+                // Publish the debugging data (to log currently)
+                _monocopter_cmds.timestamp   = hrt_absolute_time();
+                _monocopter_cmds.mag_heading = heading;
+                _monocopter_cmds.des_dir = des_dir;
+                _monocopter_cmds.des_mag = des_mag;
+                _monocopter_cmds.rot_err_p = _monocopter_vars.rot_err_p;
+                _monocopter_cmds.rot_err_i = _monocopter_vars.rot_err_i;
 
                 // publish for debugging
                 if (_monocopter_cmds_pub != nullptr) {

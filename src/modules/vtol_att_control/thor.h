@@ -76,6 +76,8 @@ private:
                 float thor_rps_i;
                 float thor_coll_p;
                 float thor_cyc_p;
+                float thor_thr_trig;
+                float thor_dir_trig;
         } _params_thor;
 
 	struct {
@@ -85,6 +87,8 @@ private:
                 param_t thor_rps_i;
                 param_t thor_coll_p;
                 param_t thor_cyc_p;
+                param_t thor_thr_trig;
+                param_t thor_dir_trig;
         } _params_handles_thor;
 
 	enum vtol_mode {
