@@ -38,7 +38,7 @@
  * - Golden Section Search
  */
 
-#define GOLDEN_RATIO 1.6180339887 //(sqrt(5)+1)/2
+static const float GOLDEN_RATIO = 1.6180339887f; //(sqrt(5)+1)/2
 
 #pragma once
 
