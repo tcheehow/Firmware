@@ -59,6 +59,24 @@
 # include <systemlib/ppm_decode.h>
 #endif
 
+enum RC_SCAN {
+	RC_SCAN_PPM = 0,
+	RC_SCAN_SBUS,
+	RC_SCAN_DSM,
+	RC_SCAN_SUMD,
+	RC_SCAN_ST24,
+	RC_SCAN_CRSF
+} _rc_scan_state{RC_SCAN_SBUS};
+
+static constexpr const char *RC_SCAN_STRING[6] = {
+	"PPM",
+	"SBUS",
+	"DSM",
+	"SUMD",
+	"ST24",
+	"CRSF"
+};
+
 class RCInput : public ModuleBase<RCInput>
 {
 public:
@@ -92,24 +110,6 @@ public:
 	int	init();
 
 private:
-	enum RC_SCAN {
-		RC_SCAN_PPM = 0,
-		RC_SCAN_SBUS,
-		RC_SCAN_DSM,
-		RC_SCAN_SUMD,
-		RC_SCAN_ST24,
-		RC_SCAN_CRSF
-	};
-	enum RC_SCAN _rc_scan_state = RC_SCAN_SBUS;
-
-	char const *RC_SCAN_STRING[6] = {
-		"PPM",
-		"SBUS",
-		"DSM",
-		"SUMD",
-		"ST24",
-		"CRSF"
-	};
 
 	hrt_abstime _rc_scan_begin{0};
 
