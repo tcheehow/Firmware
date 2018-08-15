@@ -1,3 +1,4 @@
+uint64 timestamp
 float32 mag_heading
 float32 gymag_heading
 float32 loop_time

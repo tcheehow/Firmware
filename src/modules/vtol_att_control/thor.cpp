@@ -37,7 +37,8 @@
 * @author Low Jun En	<lowjunen@gmail.com>
 */
 
-#include <math.h>
+#include <mathlib/mathlib.h>
+#include <matrix/math.hpp>
 #include "thor.h"
 #include "vtol_att_control_main.h"
 
@@ -271,9 +272,9 @@ void Thor::update_transition_state()
 	_v_att_sp->roll_body = 0.0f;
 	_v_att_sp->yaw_body = _yaw_transition;
 
-	math::Quaternion q_sp;
-	q_sp.from_euler(_v_att_sp->roll_body, _v_att_sp->pitch_body, _v_att_sp->yaw_body);
-	memcpy(&_v_att_sp->q_d[0], &q_sp.data[0], sizeof(_v_att_sp->q_d));
+	matrix::Quaternion<float> q_sp;
+	q_sp = matrix::Eulerf(_v_att_sp->roll_body, _v_att_sp->pitch_body, _v_att_sp->yaw_body);
+	memcpy(&_v_att_sp->q_d[0], &q_sp(0), sizeof(_v_att_sp->q_d));
 }
 
 void Thor::waiting_on_tecs()
