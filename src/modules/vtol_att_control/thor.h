@@ -42,8 +42,8 @@
 #define THOR_H
 
 #include "vtol_type.h"
-#include <systemlib/perf_counter.h>  /** is it necsacery? **/
-#include <systemlib/param/param.h>
+#include <perf/perf_counter.h>  /** is it necsacery? **/
+#include <parameters/param.h>
 #include <drivers/drv_hrt.h>
 #include <uORB/topics/monocopter_command.h>
 
