@@ -77,6 +77,7 @@ px4_add_romfs_files(
 	quad_x_vtol.main.mix
 	quad_x_vtol_sim.main.mix
 	stampede.main.mix
+	thor.main.mix
 	tri_y_yaw-.main.mix
 	tri_y_yaw+.main.mix
 	ugv_generic.main.mix

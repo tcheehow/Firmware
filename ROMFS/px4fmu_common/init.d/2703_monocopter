@@ -55,6 +55,6 @@ then
 	param set VT_THOR_DIR_TRIG 0.30
 fi
 
-set MIXER THOR
+set MIXER thor
 
 set PWM_OUT 123456
